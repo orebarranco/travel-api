@@ -23,7 +23,7 @@ class TravelRequest extends FormRequest
     {
         return [
             'is_public' => 'boolean',
-            'name' => ['required', 'unique:travels,name,'.$this->travel->id],
+            'name' => ['required', 'unique:travels,name,'.$this->id],
             'description' => 'required',
             'number_of_days' => ['required', 'integer'],
         ];
