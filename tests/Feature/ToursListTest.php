@@ -55,13 +55,13 @@ class ToursListTest extends TestCase
         $travel = Travel::factory()->create();
         $laterTour = Tour::factory()->create([
             'travel_id' => $travel->id,
-            'starting_date' => now()->addDays(2),
-            'ending_date' => now()->addDays(3),
+            'starting_date' => today()->addDays(2),
+            'ending_date' => today()->addDays(3),
         ]);
         $earlierTour = Tour::factory()->create([
             'travel_id' => $travel->id,
-            'starting_date' => now(),
-            'ending_date' => now()->addDays(1),
+            'starting_date' => today(),
+            'ending_date' => today()->addDay(),
         ]);
 
         $response = $this->get('api/v1/travels/'.$travel->slug.'/tours');
@@ -81,14 +81,14 @@ class ToursListTest extends TestCase
         $cheapLaterTour = Tour::factory()->create([
             'travel_id' => $travel->id,
             'price' => 100,
-            'starting_date' => now()->addDays(2),
-            'ending_date' => now()->addDays(3),
+            'starting_date' => today()->addDays(2),
+            'ending_date' => today()->addDays(3),
         ]);
         $cheapEarlierTour = Tour::factory()->create([
             'travel_id' => $travel->id,
             'price' => 100,
-            'starting_date' => now(),
-            'ending_date' => now()->addDays(1),
+            'starting_date' => today(),
+            'ending_date' => today()->addDay(),
         ]);
 
         $response = $this->get('api/v1/travels/'.$travel->slug.'/tours?sortBy=price&sortOrder=asc');
@@ -150,44 +150,44 @@ class ToursListTest extends TestCase
         $travel = Travel::factory()->create();
         $laterTour = Tour::factory()->create([
             'travel_id' => $travel->id,
-            'starting_date' => now()->addDays(2),
-            'ending_date' => now()->addDays(3),
+            'starting_date' => today()->addDays(2),
+            'ending_date' => today()->addDays(3),
         ]);
         $earlierTour = Tour::factory()->create([
             'travel_id' => $travel->id,
-            'starting_date' => now(),
-            'ending_date' => now()->addDays(1),
+            'starting_date' => today(),
+            'ending_date' => today()->addDay(),
         ]);
 
         $endpoint = 'api/v1/travels/'.$travel->slug.'/tours';
 
-        $response = $this->get($endpoint.'?dateFrom='.now());
+        $response = $this->get($endpoint.'?dateFrom='.today());
         $response->assertJsonCount(2, 'data');
         $response->assertJsonFragment(['id' => $earlierTour->id]);
         $response->assertJsonFragment(['id' => $laterTour->id]);
 
-        $response = $this->get($endpoint.'?dateFrom='.now()->addDay());
+        $response = $this->get($endpoint.'?dateFrom='.today()->addDay());
         $response->assertJsonCount(1, 'data');
         $response->assertJsonMissing(['id' => $earlierTour->id]);
         $response->assertJsonFragment(['id' => $laterTour->id]);
 
-        $response = $this->get($endpoint.'?dateFrom='.now()->addDays(5));
+        $response = $this->get($endpoint.'?dateFrom='.today()->addDays(5));
         $response->assertJsonCount(0, 'data');
 
-        $response = $this->get($endpoint.'?dateTo='.now()->subDay());
+        $response = $this->get($endpoint.'?dateTo='.today()->subDay());
         $response->assertJsonCount(0, 'data');
 
-        $response = $this->get($endpoint.'?dateTo='.now()->addDay());
+        $response = $this->get($endpoint.'?dateTo='.today()->addDay());
         $response->assertJsonCount(1, 'data');
         $response->assertJsonFragment(['id' => $earlierTour->id]);
         $response->assertJsonMissing(['id' => $laterTour->id]);
 
-        $response = $this->get($endpoint.'?dateTo='.now()->addDays(5));
+        $response = $this->get($endpoint.'?dateTo='.today()->addDays(5));
         $response->assertJsonCount(2, 'data');
         $response->assertJsonFragment(['id' => $earlierTour->id]);
         $response->assertJsonFragment(['id' => $laterTour->id]);
 
-        $response = $this->get($endpoint.'?dateFrom='.now()->addDay().'&dateTo='.now()->addDays(5));
+        $response = $this->get($endpoint.'?dateFrom='.today()->addDay().'&dateTo='.today()->addDays(5));
         $response->assertJsonCount(1, 'data');
         $response->assertJsonMissing(['id' => $earlierTour->id]);
         $response->assertJsonFragment(['id' => $laterTour->id]);
