@@ -1,0 +1,7 @@
+domains:
+    - travel-api
+php_version: "8.4"
+framework: laravel
+framework_version: "11"
+services:
+    - mysql
