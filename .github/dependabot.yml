@@ -1,44 +1,57 @@
 version: 2
+
 updates:
   - package-ecosystem: composer
-    directory: "/"
+    directory: /
     schedule:
       interval: monthly
     open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore(deps)
+      prefix-development: chore(deps-dev)
     groups:
-      composer-production:
-        dependency-type: production
-        update-types:
-          - minor
-          - patch
-      composer-development:
-        dependency-type: development
+      composer:
+        patterns:
+          - "*"
         update-types:
           - minor
           - patch
 
   - package-ecosystem: npm
-    directory: "/"
+    directory: /
     schedule:
       interval: monthly
     open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore(deps)
+      prefix-development: chore(deps-dev)
     groups:
-      npm-production:
-        dependency-type: production
-        update-types:
-          - minor
-          - patch
-      npm-development:
-        dependency-type: development
+      # vite and laravel-vite-plugin are locked together by peer dependency:
+      # the plugin's 3.x line requires vite ^8, its 2.x line requires vite ^7.
+      # Split into separate pull requests, each one is unmergeable on its own.
+      # No update-types here on purpose, so majors stay grouped too.
+      vite:
+        patterns:
+          - vite
+          - laravel-vite-plugin
+      npm:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - vite
+          - laravel-vite-plugin
         update-types:
           - minor
           - patch
 
   - package-ecosystem: github-actions
-    directory: "/"
+    directory: /
     schedule:
       interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: ci
     groups:
-      github-actions:
+      actions:
         patterns:
           - "*"
